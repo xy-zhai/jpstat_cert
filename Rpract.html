@@ -11,7 +11,7 @@
 
 <meta name="author" content="ZHAI XINGYU" />
 
-<meta name="date" content="2024-06-16" />
+<meta name="date" content="2024-06-17" />
 
 <title>R practice for stat test</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">R practice for stat test</h1>
 <h4 class="author">ZHAI XINGYU</h4>
-<h4 class="date">2024-06-16</h4>
+<h4 class="date">2024-06-17</h4>
 
 </div>
 
@@ -363,11 +363,26 @@ display: none;
 <li><a href="#符号検定" id="toc-符号検定"><span class="toc-section-number">1.1</span> 符号検定</a></li>
 <li><a href="#符号付き順位検定" id="toc-符号付き順位検定"><span class="toc-section-number">1.2</span> 符号付き順位検定</a></li>
 </ul></li>
-<li><a href="#マルコフ連鎖" id="toc-マルコフ連鎖"><span class="toc-section-number">2</span> マルコフ連鎖</a>
+<li><a href="#確率過程" id="toc-確率過程"><span class="toc-section-number">2</span> 確率過程</a>
 <ul>
-<li><a href="#マルコフ連鎖-1" id="toc-マルコフ連鎖-1"><span class="toc-section-number">2.1</span> マルコフ連鎖</a></li>
-<li><a href="#定常分布" id="toc-定常分布"><span class="toc-section-number">2.2</span> 定常分布</a></li>
-<li><a href="#定常分布の存在と一意性" id="toc-定常分布の存在と一意性"><span class="toc-section-number">2.3</span> 定常分布の存在と一意性</a></li>
+<li><a href="#マルコフ連鎖" id="toc-マルコフ連鎖"><span class="toc-section-number">2.1</span> マルコフ連鎖</a>
+<ul>
+<li><a href="#基本的な用語" id="toc-基本的な用語"><span class="toc-section-number">2.1.1</span> 基本的な用語</a></li>
+<li><a href="#チャップマンコルモゴロフ方程式" id="toc-チャップマンコルモゴロフ方程式"><span class="toc-section-number">2.1.2</span>
+チャップマン–コルモゴロフ方程式</a></li>
+<li><a href="#定常分布" id="toc-定常分布"><span class="toc-section-number">2.1.3</span> 定常分布</a></li>
+<li><a href="#定常分布の存在と一意性" id="toc-定常分布の存在と一意性"><span class="toc-section-number">2.1.4</span> 定常分布の存在と一意性</a></li>
+</ul></li>
+<li><a href="#ブラウン運動ウィーナー過程" id="toc-ブラウン運動ウィーナー過程"><span class="toc-section-number">2.2</span> ブラウン運動（ウィーナー過程）</a>
+<ul>
+<li><a href="#マルコフ連鎖n" id="toc-マルコフ連鎖n"><span class="toc-section-number">2.2.1</span> マルコフ連鎖n</a></li>
+<li><a href="#ブラウン運動brownian-motion" id="toc-ブラウン運動brownian-motion"><span class="toc-section-number">2.2.2</span> ブラウン運動（Brownian
+motion）</a></li>
+<li><a href="#標準ブラウン運動" id="toc-標準ブラウン運動"><span class="toc-section-number">2.2.3</span> 標準ブラウン運動</a></li>
+<li><a href="#パラメータの推定" id="toc-パラメータの推定"><span class="toc-section-number">2.2.4</span> パラメータの推定</a></li>
+<li><a href="#株価モデル" id="toc-株価モデル"><span class="toc-section-number">2.2.5</span> 株価モデル</a></li>
+</ul></li>
+<li><a href="#ポアソン過程" id="toc-ポアソン過程"><span class="toc-section-number">2.3</span> ポアソン過程</a></li>
 </ul></li>
 </ul>
 </div>
@@ -404,21 +419,87 @@ V(iI)=i^2*1/4, E(T)=1/2\sum{i}=\frac{(1+n)n}{4}, v(T)=1/4
 <pre class="r"><code>&gt; # n=7(sequence)</code></pre>
 </div>
 </div>
-<div id="マルコフ連鎖" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> マルコフ連鎖</h1>
-<div id="マルコフ連鎖-1" class="section level2" number="2.1">
+<div id="確率過程" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> 確率過程</h1>
+<p>参考：<a href="https://manabitimes.jp/math/1057#4">数学的モデリングまとめ</a>;<a href="https://www.actuaries.jp/examin/textbook/">アクチュアリー会発行の教科書</a></p>
+<p><strong>確率過程(stochastic process)</strong>は時間など，
+条件によって変化する確率変数の数理モデルである。</p>
+<ul>
+<li><p>株価や為替の変動、ブラウン運動などの粒子のランダムな運動を数学的に記述する模型（モデル）として利用している。</p></li>
+<li><p>不規則過程(random process)</p></li>
+</ul>
+<p><strong>マルコフ過程(Markov
+process)</strong>は現在の状態から確率的に次の状態が決まること、
+<strong>マルコフ連鎖(Markov
+chains)</strong>はマルコフ過程のなかで<em>取りうる状態が有限</em>のもののことを言う。</p>
+<ul>
+<li><p>ロシアの数学者:アンドレイ・アンドレエヴィチ・マルコフ(Andrey
+(Andrei) Andreyevich Markov)</p></li>
+<li><p>未来の状態（の確率）が過去の状態によらず<em>現在の状態のみで決まる</em>ような確率過程</p></li>
+<li><p>マルコフ連鎖:状態空間が離散的なマルコフ過程</p></li>
+</ul>
+<p><strong>拡散過程(diffusion
+process)</strong>とは<em>マルコフ過程</em>の特別な場合を指す確率過程で、
+<strong>ブラウン運動(ウィーナー過程)</strong>とはその拡散過程の非常に特殊な場合を指します。</p>
+<ul>
+<li><em>確率微分方程式(Stochastic differential
+equation)</em>の解として得られる確率過程<span class="math inline">\(X_t\)</span>は拡散過程</li>
+</ul>
+<p>そして拡散過程は、二つのパラメータ、<em>拡散係数(diffusion
+coefficient)</em><span class="math inline">\(\sigma(x,t)\)</span>と<em>ドリフト係数(drift
+coefficient)</em><span class="math inline">\(\mu(x,t)\)</span>によって特徴付けられます。</p>
+<ul>
+<li><em>拡散係数が1</em>、<em>ドリフト係数が0</em>のときをブラウン運動というのでした。</li>
+</ul>
+<div id="マルコフ連鎖" class="section level2" number="2.1">
 <h2><span class="header-section-number">2.1</span> マルコフ連鎖</h2>
-<p>推移図:１つ前の状態が決まると，次の状態へ移る確率が決まる</p>
+<p><block> マルコフ連鎖の定義:</p>
+<p>マルコフ連鎖とは，</p>
+<p><span class="math display">\[P(X_{t+1} | X_{t} , X_{t-1} ,
+\dots,  X_1) = P(X_{t+1} | X_{t})\]</span>
+を満たすような確率変数の列<span class="math inline">\(X_1, X_2,
+\dots\)</span>のこと。</p>
+<ul>
+<li><p><span class="math inline">\(X_{t}\)</span> によって<span class="math inline">\(X_{t+1}\)</span>の傾向が決まる</p></li>
+<li><p><span class="math inline">\(X_{t-1}\)</span>以前は<span class="math inline">\(X_{t}\)</span>に影響しない </block></p></li>
+</ul>
+<div id="基本的な用語" class="section level3" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> 基本的な用語</h3>
 <ul>
 <li><p>初期分布/状態確率ベクトル</p></li>
-<li><p>推移確率行列:
-どの時点でも，次のステップで状態iから状態jに移る確率<span class="math inline">\(q_{ij}\)</span>は一定(斉時的), このような<span class="math inline">\(q_{ij}\)</span>を(i，j)成分にもつような行列が推移確率行列Qです。</p></li>
+<li><p>推移確率/遷移確率: <span class="math inline">\(P(X_{t+1} |
+X_{t})\)</span></p></li>
 </ul>
-<p><span class="math inline">\(状態確率ベクトル=(初期分布)[推移確率行列]^n\)</span></p>
+<p>注：この記事では時間的に均一（遷移確率が時刻によらない）なマルコフ連鎖を考えています。</p>
 <ul>
-<li><p>推移確率行列が対角化可能な行列であれば，固有値でQのn乗を手計算でも求めることができる</p></li>
-<li><p>状態空間:とりうる状態の全体, <span class="math inline">\(\{1,2,3,
-\dots, N\}\)</span></p></li>
+<li><p>推移/遷移確率行列:
+どの時点でも，次のステップで状態iから状態jに移る確率<span class="math inline">\(q_{ij}\)</span>は一定(斉時的), このような<span class="math inline">\(q_{ij}\)</span>を(i，j)成分にもつような行列が推移確率行列Qです。</p>
+<ul>
+<li><p>ij成分: iからjに推移する確率</p></li>
+<li><p>推移確率行列の各要素は0以上1以下です。</p></li>
+<li><p>推移確率行列のどの行も，行和は1です。</p></li>
+</ul></li>
+</ul>
+<p><span class="math display">\[Q
+=
+\begin{bmatrix}
+q_{11} &amp; q_{12} &amp; \dots  &amp; q_{1j} &amp; \dots  &amp;
+q_{1N}\\
+q_{21} &amp; q_{22} &amp; \dots  &amp; q_{2j} &amp; \dots  &amp;
+q_{2N}\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \ddots &amp;
+\vdots\\
+q_{i1} &amp; q_{i2} &amp; \dots  &amp; q_{ij} &amp; \dots  &amp;
+q_{iN}\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \ddots &amp;
+\vdots\\
+q_{N1} &amp; q_{N2} &amp; \dots  &amp; q_{Nj} &amp; \dots  &amp;
+q_{NN}\\
+\end{bmatrix}\]</span></p>
+<ul>
+<li><p>状態空間:<span class="math inline">\(X_t\)</span>がとりうる値の集合のこと。状態の全体,
+<span class="math inline">\(S=\{1,2,3, \dots, N\}\)</span></p></li>
+<li><p>推移図/状態遷移図:１つ前の状態が決まると，次の状態へ移る確率が決まる</p></li>
 </ul>
 <p><block></p>
 <pre class="r"><code># create a dataframe
@@ -486,13 +567,14 @@ kable(df1, caption = &#39;マルコフ連鎖&#39;)</code></pre>
 P(X_4 = 2 | X_3 =2, X_2 = 1, X_1 = 2, X_0 = 1) = P(X_4 = 2 | X_3 =2)
 \rightarrow
 １つ前の時点に関する条件だけで表せる
-\]</span>
-<strong>次の条件を満たすような確率変数列を離散時間のマルコフ連鎖と言います。</strong></p>
+\]</span></p>
+<p><strong>次の条件を満たすような確率変数列を離散時間のマルコフ連鎖と言います。</strong></p>
 <p><span class="math inline">\({X_0, X_1, \dots, X_i}\)</span></p>
 <p><span class="math display">\[
 P(X_{n+1} = j | X_{n} =i, X_{n-1} = i_{n-1}, X_{n-2} = i_{n-2},
 \dots,  X_0 = i_0) = P(X_{n+1} = j | X_{n} =i)
-\]</span> <strong>斉時的: 条件付き確率が時点に依存しない</strong></p>
+\]</span></p>
+<p><strong>斉時的: 条件付き確率が時点に依存しない</strong></p>
 <p><span class="math display">\[
 P(X_{n+1} = j | X_{n} =i) = q_{ij}
 \]</span></p>
@@ -528,8 +610,32 @@ q_{NN}\\
 \end{bmatrix}
 \]</span> </block></p>
 </div>
-<div id="定常分布" class="section level2" number="2.2">
-<h2><span class="header-section-number">2.2</span> 定常分布</h2>
+<div id="チャップマンコルモゴロフ方程式" class="section level3" number="2.1.2">
+<h3><span class="header-section-number">2.1.2</span>
+チャップマン–コルモゴロフ方程式</h3>
+<p>定理:
+マルコフ連鎖の推移確率行列について<strong>「推移確率行列のn乗」</strong>
+<span class="math inline">\(Q^n\)</span>と<strong>「n回の遷移の確率」</strong><span class="math inline">\(Q^{(n)}\)</span>が
+対応するという性質が成り立ちます。</p>
+<ul>
+<li><p>n時刻経過に対する推移確率行列を<span class="math inline">\(Q^{(n)}\)</span>と書くことにします。</p></li>
+<li><p>つまり，<span class="math inline">\(P(X_{t+n}=j|X_{t}=i)\)</span>をij成分に持つ行列を<span class="math inline">\(Q^{(n)}\)</span>とします。</p></li>
+<li><p><span class="math inline">\(Q^{(n)}=Q^n\)</span></p></li>
+</ul>
+<p><span class="math display">\[状態確率ベクトル:p_{t+n}=(初期分布:p_t)[推移確率行列:Q]^n\]</span></p>
+<ul>
+<li>推移確率行列が対角化可能な行列であれば，固有値でQのn乗を手計算でも求めることができる</li>
+</ul>
+<p><strong>チャップマン–コルモゴロフ方程式(Chapman-Kolmogorov
+equation)</strong></p>
+<p>上記の定理より，<span class="math inline">\(Q^{(n+m)}=Q^{(n)}Q^{(m)}\)</span>が成立します。</p>
+<ul>
+<li>n時刻ぶんの遷移の様子<span class="math inline">\(Q^{(n)}\)</span>とm時刻ぶんの遷移の様子<span class="math inline">\(Q^{(m)}\)</span>が分かれば、
+(n+m)時刻ぶんの遷移の様子<span class="math inline">\(Q^{(n+m)}\)</span>も分かります。</li>
+</ul>
+</div>
+<div id="定常分布" class="section level3" number="2.1.3">
+<h3><span class="header-section-number">2.1.3</span> 定常分布</h3>
 <p>nが十分に大きければ，
 n日後の状態確率ベクトルと(n＋１)日後の状態確率ベクトルはほぼ等しくなるので，
 最終的な<em>状態確率ベクトル</em>をπとして，次の式が成り立つことになりそうです。</p>
@@ -555,12 +661,145 @@ b_{1} &amp; b_{2}
 \end{bmatrix}
 \]</span> </block></p>
 </div>
-<div id="定常分布の存在と一意性" class="section level2" number="2.3">
-<h2><span class="header-section-number">2.3</span>
-定常分布の存在と一意性</h2>
+<div id="定常分布の存在と一意性" class="section level3" number="2.1.4">
+<h3><span class="header-section-number">2.1.4</span>
+定常分布の存在と一意性</h3>
 <p>既約:
 すべての状態の間で有限回の移動で移り合うことができるマルコフ連鎖</p>
 <p>一般に，既約な有限マルコフ連鎖は<em>ただ１つの定常分布をもつ</em>ことが知られています。</p>
+</div>
+</div>
+<div id="ブラウン運動ウィーナー過程" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span>
+ブラウン運動（ウィーナー過程）</h2>
+<div id="マルコフ連鎖n" class="section level3" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> マルコフ連鎖n</h3>
+<p>1/n秒に１回コインを投げ、表は<span class="math inline">\(+\frac{1}{\sqrt{n}}\)</span>点、裏は<span class="math inline">\(-\frac{1}{\sqrt{n}}\)</span>点</p>
+<p><block> <strong>例題：
+マルコフ連鎖nにおいて、t秒間に得られる得点の期待値および分散</strong></p>
+<p>ただし、<span class="math inline">\(t=t&#39; + t&#39;&#39;(t&#39;
+\times n は整数かつ 0 \leq t&#39;&#39;&lt;
+\frac{1}{n})\)</span>とします。</p>
+<p>解答：　１回コインを投げて得られる得点を X で表し、t
+秒間に得られる得点を S で表すと、</p>
+<p><span class="math display">\[E(X)=\frac{1}{\sqrt{n}} \times
+\frac{1}{2} - \frac{1}{\sqrt{n}} \times \frac{1}{2}=0\]</span></p>
+<p><span class="math display">\[E(X^2)=(\frac{1}{\sqrt{n}})^2 \times
+\frac{1}{2} + (\frac{1}{\sqrt{n}})^2  \times
+\frac{1}{2}=\frac{1}{n}\]</span></p>
+<p><span class="math display">\[V(X)=E(X^2)-(E(X))^2=\frac{1}{2}=\frac{1}{n}\]</span></p>
+<p>1/n秒に１回コインを投げ、t 秒間にコイントスは<span class="math inline">\(t&#39; \times n\)</span>回行われるので、</p>
+<p><span class="math display">\[S=X_1 + \dots + X_{nt&#39;}\]</span></p>
+<p><span class="math display">\[E(S)=0, V(S)=t&#39; n \times V(X) =
+t&#39; \]</span> ここで <em>nを無限大</em>まで大きくすることを考えます。
+すると、それはある確率過程となります。
+その確率過程は<strong>ブラウン運動</strong>とよばれる確率過程です。
+</block></p>
+</div>
+<div id="ブラウン運動brownian-motion" class="section level3" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span>
+ブラウン運動（Brownian motion）</h3>
+<p>以下を満たす確率過程X(<span class="math inline">\(\{X_t\}:X=(X_t)_{t&gt;0} \space
+t時刻の位置、上記のS\)</span>)と言います。</p>
+<ol style="list-style-type: decimal">
+<li><p>連続性：<span class="math inline">\(X_t\)</span>の見本関数/パスはtに関する連続関数</p></li>
+<li><p>独立増分性：<span class="math inline">\(0 \leq s &lt; t \leq u
+&lt; v \rightarrow X_t - X_s と X_v - X_uは独立\)</span></p>
+<ul>
+<li><p>または、次のような任意の時間の分割<span class="math inline">\(0 =
+t_0 &lt; t_1 &lt; \dots &lt; t_{n-1} &lt; t_n\)</span>に対して，
+次のようなn個の増分はすべて互いに独立：<span class="math inline">\(X_{t_i} - X_{t_{i-1}}\)</span></p></li>
+<li><p>注：増分独立、<span class="math inline">\(X_{t}\)</span> と <span class="math inline">\(X_{s}\)</span>
+は独立ではないことに注意しましょう。</p></li>
+</ul></li>
+<li><p>定常増分性： <span class="math inline">\(X_{s+t}-X_tとX_s同じ分布に従う\)</span></p>
+<ul>
+<li>増分は期待値，分散が時間の幅(s+t-t=s)に比例する正規分布に従う</li>
+</ul></li>
+</ol>
+<p><span class="math display">\[
+\textbf{Theorem:}
+任意の t &gt; s \geq 0に対して，
+X_t をブラウン運動とするとき、増分 X_t-X_s
+は、期待値E(X_t-X_s)・分散V(X_t-X_s)の正規分布に従う。\\
+X_t-X_s \sim N[E(X_t-X_s), V(X_t-X_s)] = N[\mu (t-s), {\sigma}^2 (t-s)]
+\]</span></p>
+<p>一般的なブラウン運動は，<em><span class="math inline">\(\mu\)</span>と<span class="math inline">\(\sigma\)</span>というパラメータ</em>を使って，次のように表せます。</p>
+<p><span class="math display">\[\sigma X_t + \mu t \sim N(\mu t,
+{\sigma}^2 t)\]</span></p>
+<ul>
+<li><p><span class="math inline">\(\mu\)</span>:
+ドリフト係数と呼ばれるもので，トレンドを表しています。</p>
+<ul>
+<li><span class="math inline">\(\mu &gt;
+0\)</span>ならば，期待値と分散は時間が経過するほど増加することがわかります。</li>
+</ul></li>
+<li><p><span class="math inline">\(\sigma\)</span>:
+拡散係数と呼ばれるもので，<span class="math inline">\(\mu
+t\)</span>のまわりのばらつき方を決めるパラメータです。</p></li>
+</ul>
+<p>ただし，<span class="math inline">\(X_t\)</span>と<span class="math inline">\(X_s\)</span>は独立ではないことに注意しましょう。</p>
+<p><span class="math display">\[cov(X_t, X_s)=cov(X_t - X_s + X_s, X_s)
+=cov(X_t - X_s, X_s) + cov(X_s, X_s)
+=0 + V(X_s)={\sigma}^2 s \space (増分独立により)\]</span></p>
+<p>ブラウン運動は正規分布に対応する確率過程であり、正規分布がガウス分布とも呼ばれることから、
+<strong>ガウス過程（Gaussian process）</strong>とも呼ばれます。</p>
+</div>
+<div id="標準ブラウン運動" class="section level3" number="2.2.3">
+<h3><span class="header-section-number">2.2.3</span>
+標準ブラウン運動</h3>
+<p>ブラウン運動がさらに次の条件を満たすときに、
+<strong>標準ブラウン運動（standard Brownian
+motion）</strong>または<strong>ウィーナー過程（Wiener
+process）</strong>といいます。</p>
+<ol start="4" style="list-style-type: decimal">
+<li><p><span class="math inline">\(X_0=0\)</span></p></li>
+<li><p><span class="math inline">\(E(X_t)=0\)</span></p></li>
+<li><p><span class="math inline">\(V(X_t)=t\)</span></p></li>
+</ol>
+<p>なお、ウィーナー過程(<span class="math inline">\(X_t \sim
+N(0,t)\)</span>)は、標準正規分布に対応する確率過程です。</p>
+<ul>
+<li><span class="math inline">\(\mu=0,
+\sigma=1\)</span>が成り立つ場合を標準ブラウン運動と言います。</li>
+</ul>
+</div>
+<div id="パラメータの推定" class="section level3" number="2.2.4">
+<h3><span class="header-section-number">2.2.4</span>
+パラメータの推定</h3>
+<p>株価など，ブラウン運動を使ってモデル化したい現象があったときに，
+<span class="math inline">\(\mu\)</span>や<span class="math inline">\(\sigma\)</span>といったパラメータを推定する必要があります。
+そのための方法として，<em>等しい時間間隔(独立増分性と定常増分性を利用)</em>で
+高頻度にデータを観測する方法があります。</p>
+<p>一般的に，一定の時間間隔をデルタ<span class="math inline">\(\Delta=t/n, k=\{1,
+\dots,n\}\)</span>とした場合には，
+となり合う時点間の増分は次の正規分布に従います。</p>
+<p><span class="math display">\[
+S_k = X_{k \Delta} - X_{(k-1) \Delta} \sim N(\mu \Delta, {\sigma}^2
+\Delta)
+\]</span></p>
+<p>上の正規分布のパラメータを最尤法(MLE)で推定するとすれば，
+母平均の最尤推定量は標本平均だったので，次の式になります。</p>
+<p><span class="math display">\[
+\hat{\mu \Delta} = \bar{S_k}=\frac{1}{n} \sum_{k=1}^{n}{S_k}\\
+\hat{{\sigma}^2 \Delta} = \frac{1}{n} \sum_{k=1}^{n} (S_k - \bar{S_k})^2
+=
+\frac{1}{n} \sum_{k=1}^{n}{S_k^2} - (\frac{1}{n} \sum_{k=1}^{n}{S_k})^2
+\]</span></p>
+</div>
+<div id="株価モデル" class="section level3" number="2.2.5">
+<h3><span class="header-section-number">2.2.5</span> 株価モデル</h3>
+<p>ウィーナー過程は、大変扱いやすい（計算しやすい）という性質をもっており、
+金融工学等の分野でよく用いられます。</p>
+<ul>
+<li>例えば、<em>ブラック・ショールズ式（The Black-Scholes
+formula）</em>と呼ばれるオプションのプライシング公式も、
+このブラウン運動を元に計算を行っています</li>
+</ul>
+</div>
+</div>
+<div id="ポアソン過程" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> ポアソン過程</h2>
 </div>
 </div>
 
