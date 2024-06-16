@@ -11,7 +11,7 @@
 
 <meta name="author" content="ZHAI XINGYU" />
 
-<meta name="date" content="2024-06-14" />
+<meta name="date" content="2024-06-16" />
 
 <title>R practice for stat test</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">R practice for stat test</h1>
 <h4 class="author">ZHAI XINGYU</h4>
-<h4 class="date">2024-06-14</h4>
+<h4 class="date">2024-06-16</h4>
 
 </div>
 
@@ -362,6 +362,12 @@ display: none;
 <ul>
 <li><a href="#符号検定" id="toc-符号検定"><span class="toc-section-number">1.1</span> 符号検定</a></li>
 <li><a href="#符号付き順位検定" id="toc-符号付き順位検定"><span class="toc-section-number">1.2</span> 符号付き順位検定</a></li>
+</ul></li>
+<li><a href="#マルコフ連鎖" id="toc-マルコフ連鎖"><span class="toc-section-number">2</span> マルコフ連鎖</a>
+<ul>
+<li><a href="#マルコフ連鎖-1" id="toc-マルコフ連鎖-1"><span class="toc-section-number">2.1</span> マルコフ連鎖</a></li>
+<li><a href="#定常分布" id="toc-定常分布"><span class="toc-section-number">2.2</span> 定常分布</a></li>
+<li><a href="#定常分布の存在と一意性" id="toc-定常分布の存在と一意性"><span class="toc-section-number">2.3</span> 定常分布の存在と一意性</a></li>
 </ul></li>
 </ul>
 </div>
@@ -396,6 +402,165 @@ FALSE [1] 6</code></pre>
 V(iI)=i^2*1/4, E(T)=1/2\sum{i}=\frac{(1+n)n}{4}, v(T)=1/4
 \sum{i^2}=\frac{n(n+1)(2n+1)}{6*4}\)</span></p>
 <pre class="r"><code>&gt; # n=7(sequence)</code></pre>
+</div>
+</div>
+<div id="マルコフ連鎖" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> マルコフ連鎖</h1>
+<div id="マルコフ連鎖-1" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> マルコフ連鎖</h2>
+<p>推移図:１つ前の状態が決まると，次の状態へ移る確率が決まる</p>
+<ul>
+<li><p>初期分布/状態確率ベクトル</p></li>
+<li><p>推移確率行列:
+どの時点でも，次のステップで状態iから状態jに移る確率<span class="math inline">\(q_{ij}\)</span>は一定(斉時的), このような<span class="math inline">\(q_{ij}\)</span>を(i，j)成分にもつような行列が推移確率行列Qです。</p></li>
+</ul>
+<p><span class="math inline">\(状態確率ベクトル=(初期分布)[推移確率行列]^n\)</span></p>
+<ul>
+<li><p>推移確率行列が対角化可能な行列であれば，固有値でQのn乗を手計算でも求めることができる</p></li>
+<li><p>状態空間:とりうる状態の全体, <span class="math inline">\(\{1,2,3,
+\dots, N\}\)</span></p></li>
+</ul>
+<p><block></p>
+<pre class="r"><code># create a dataframe
+df1 &lt;- data.frame(
+  時点 = c(0,1,2,3,4,&#39;...&#39;, &#39;n&#39;, &#39;n+1&#39;),
+  観測状態 = c(1,2,1,1,2,&#39;...&#39;, &#39;i&#39;, &#39;j&#39;),
+  確率変数列 = c(&#39;X0=1&#39;, &#39;X1=2&#39;, &#39;X2=1&#39;, &#39;X3=1&#39;, &#39;X4=2&#39;, &#39;...&#39;, &#39;Xn=i&#39;, &#39;Xn+1=j&#39;)
+)
+
+kable(df1, caption = &#39;マルコフ連鎖&#39;)</code></pre>
+<table>
+<caption>マルコフ連鎖</caption>
+<thead>
+<tr class="header">
+<th align="left">時点</th>
+<th align="left">観測状態</th>
+<th align="left">確率変数列</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">X0=1</td>
+</tr>
+<tr class="even">
+<td align="left">1</td>
+<td align="left">2</td>
+<td align="left">X1=2</td>
+</tr>
+<tr class="odd">
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">X2=1</td>
+</tr>
+<tr class="even">
+<td align="left">3</td>
+<td align="left">1</td>
+<td align="left">X3=1</td>
+</tr>
+<tr class="odd">
+<td align="left">4</td>
+<td align="left">2</td>
+<td align="left">X4=2</td>
+</tr>
+<tr class="even">
+<td align="left">…</td>
+<td align="left">…</td>
+<td align="left">…</td>
+</tr>
+<tr class="odd">
+<td align="left">n</td>
+<td align="left">i</td>
+<td align="left">Xn=i</td>
+</tr>
+<tr class="even">
+<td align="left">n+1</td>
+<td align="left">j</td>
+<td align="left">Xn+1=j</td>
+</tr>
+</tbody>
+</table>
+<p><strong>NOTE:１つ前の状態が決まると，次の状態へ移る確率が決まる</strong></p>
+<p><span class="math display">\[
+P(X_4 = 2 | X_3 =2, X_2 = 1, X_1 = 2, X_0 = 1) = P(X_4 = 2 | X_3 =2)
+\rightarrow
+１つ前の時点に関する条件だけで表せる
+\]</span>
+<strong>次の条件を満たすような確率変数列を離散時間のマルコフ連鎖と言います。</strong></p>
+<p><span class="math inline">\({X_0, X_1, \dots, X_i}\)</span></p>
+<p><span class="math display">\[
+P(X_{n+1} = j | X_{n} =i, X_{n-1} = i_{n-1}, X_{n-2} = i_{n-2},
+\dots,  X_0 = i_0) = P(X_{n+1} = j | X_{n} =i)
+\]</span> <strong>斉時的: 条件付き確率が時点に依存しない</strong></p>
+<p><span class="math display">\[
+P(X_{n+1} = j | X_{n} =i) = q_{ij}
+\]</span></p>
+<p><strong>全確率の公式:時点nで1からNのどの状態にあったのか</strong></p>
+<p><span class="math display">\[
+P(X_{n+1} = j)= \sum_{1}^{N} {P(X_{n+1}=j|X_{n}=i)P(X_n=i)}
+\]</span></p>
+<p>略記</p>
+<p><span class="math display">\[
+P(X_n=i)=p_n(i)
+\]</span> 全確率の公式を次のように書き直すことができます。</p>
+<p><span class="math display">\[
+P(X_{n+1} = j)= \sum_{1}^{N} p_n(i)q_{ij}
+\]</span></p>
+<p>jは1からNまでの自然数のいずれかなので，そのすべてを列挙すると，次のように表せます。</p>
+<p><span class="math display">\[
+(p_{n+1}(1), p_{n+1}(2), \dots, p_{n+1}(j), \dots,  p_{n+1}(N))
+=
+(p_{n}(1), p_{n}(2), \dots, p_{n}(i), \dots,  p_{n}(N))
+\begin{bmatrix}
+q_{11} &amp; q_{12} &amp; \dots  &amp; q_{1j} &amp; \dots  &amp;
+q_{1N}\\
+q_{21} &amp; q_{22} &amp; \dots  &amp; q_{2j} &amp; \dots  &amp;
+q_{2N}\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \ddots &amp;
+\vdots\\
+q_{i1} &amp; q_{i2} &amp; \dots  &amp; q_{ij} &amp; \dots  &amp;
+q_{iN}\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \ddots &amp;
+\vdots\\
+q_{N1} &amp; q_{N2} &amp; \dots  &amp; q_{Nj} &amp; \dots  &amp;
+q_{NN}\\
+\end{bmatrix}
+\]</span> </block></p>
+</div>
+<div id="定常分布" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> 定常分布</h2>
+<p>nが十分に大きければ，
+n日後の状態確率ベクトルと(n＋１)日後の状態確率ベクトルはほぼ等しくなるので，
+最終的な<em>状態確率ベクトル</em>をπとして，次の式が成り立つことになりそうです。</p>
+<p><span class="math inline">\(\pi = \pi A\)</span></p>
+<p>このようなπを<em>定常分布</em>と言います。</p>
+<p><em>推移確率行列A</em>をかけても変化しないような<em>状態確率ベクトル<span class="math inline">\(\pi\)</span></em>です。</p>
+<p><block> 推移確率行列A</p>
+<p><span class="math display">\[
+A=
+\begin{bmatrix}
+a_1 &amp; a_2 \\
+b_1 &amp; b_2
+\end{bmatrix}
+\]</span> 定常分布<span class="math inline">\(\pi =
+(a,b)\)</span>を求めます</p>
+<p><span class="math display">\[
+(a,b)
+=
+(a,b)
+\begin{bmatrix}
+a_{1} &amp; a_{2} \\
+b_{1} &amp; b_{2}
+\end{bmatrix}
+\]</span> </block></p>
+</div>
+<div id="定常分布の存在と一意性" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span>
+定常分布の存在と一意性</h2>
+<p>既約:
+すべての状態の間で有限回の移動で移り合うことができるマルコフ連鎖</p>
+<p>一般に，既約な有限マルコフ連鎖は<em>ただ１つの定常分布をもつ</em>ことが知られています。</p>
 </div>
 </div>
 
